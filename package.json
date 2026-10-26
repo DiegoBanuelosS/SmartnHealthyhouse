@@ -33,7 +33,7 @@
     "dompurify": "^3.2.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "express-rate-limit": "^7.5.0",
+    "express-rate-limit": "^8.7.1",
     "express-validator": "^7.3.2",
     "firebase-admin": "^13.4.0",
     "helmet": "^8.1.0",
