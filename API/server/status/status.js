@@ -1,3 +1,9 @@
+const statusLog = (typeof HouseLog !== "undefined") ? HouseLog : {
+    info() {},
+    warn() {},
+    error() {}
+};
+
 // Configuration
 const CONFIG = {
     API_URL: 'http://localhost:3000',
@@ -54,13 +60,13 @@ class APIService {
     static socket = null;
 
     static initializeWebSocket() {
-        console.log('🔌 Initializing WebSocket connection...');
+        statusLog.info("Initializing WebSocket connection");
         
         // Initialize socket with proper options
         this.socket = io(CONFIG.API_URL, CONFIG.SOCKET_OPTIONS);
 
         this.socket.on('connect', () => {
-            console.log('✅ WebSocket connected with ID:', this.socket.id);
+            statusLog.info("WebSocket connected", { id: this.socket.id });
             this.fetchStatus().then(({data}) => {
                 window.statusMonitor.stateManager.updateState({
                     ...data,
@@ -71,13 +77,13 @@ class APIService {
         });
 
         this.socket.on('disconnect', (reason) => {
-            console.log('❌ WebSocket disconnected:', reason);
+            statusLog.info("WebSocket disconnected", { reason });
             window.statusMonitor.stateManager.isConnected = false;
             window.statusMonitor.handleDisconnection();
         });
 
         this.socket.on('connect_error', (error) => {
-            console.error('❌ Connection error:', error.message);
+            statusLog.error("Connection error", { error: error.message });
             window.statusMonitor.handleDisconnection();
         });
 
@@ -87,7 +93,7 @@ class APIService {
         });
 
         this.socket.on('sensorUpdate', (data) => {
-            console.log('Received sensor update:', data);
+            statusLog.info("Received sensor update");
         });
 
         this.socket.on('incidentsCleared', () => {
@@ -115,7 +121,7 @@ class APIService {
             const data = await response.json();
             return { data, responseTime };
         } catch (error) {
-            console.error('Error fetching status:', error);
+            statusLog.error("Error fetching status", { error: error.message });
             throw error;
         }
     }
@@ -149,7 +155,7 @@ class APIService {
 
     static async clearIncidents() {
         try {
-            console.log('📝 Sending clear incidents request...');
+            statusLog.info("Sending clear incidents request");
             const response = await fetch(`${CONFIG.API_URL}/clear-incidents`, {
                 method: 'POST',
                 headers: {
@@ -158,15 +164,15 @@ class APIService {
             });
 
             if (!response.ok) {
-                console.error('❌ Server responded with status:', response.status);
+                statusLog.error("Server responded with an error", { status: response.status });
                 throw new Error('Error al limpiar incidentes');
             }
 
             const data = await response.json();
-            console.log('✅ Server response:', data);
+            statusLog.info("Clear incidents response", { success: Boolean(data && data.success) });
             return data;
         } catch (error) {
-            console.error('❌ Error in clearIncidents:', error);
+            statusLog.error("Error in clearIncidents", { error: error.message });
             throw error;
         }
     }
@@ -189,9 +195,9 @@ class StatusMonitor {
         window.clearAllIncidents = async () => {
             try {
                 await APIService.clearIncidents();
-                console.log('✅ Incidentes limpiados exitosamente');
+                statusLog.info("Incidentes limpiados exitosamente");
             } catch (error) {
-                console.error('❌ Error al limpiar incidentes:', error);
+                statusLog.error("Error al limpiar incidentes", { error: error.message });
             }
         };
 
@@ -217,7 +223,7 @@ class StatusMonitor {
 
     setupEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Iniciando sistema de monitoreo...');
+            statusLog.info("Iniciando sistema de monitoreo");
             UIManager.initializeAnimations();
             this.monitorStatus();
             
@@ -228,9 +234,9 @@ class StatusMonitor {
                     clearButton.addEventListener('click', async () => {
                         try {
                             await APIService.clearIncidents();
-                            console.log('Incidentes limpiados exitosamente');
+                            statusLog.info("Incidentes limpiados exitosamente");
                         } catch (error) {
-                            console.error('Error al limpiar incidentes:', error);
+                            statusLog.error("Error al limpiar incidentes", { error: error.message });
                         }
                     });
                 }
@@ -248,7 +254,7 @@ class StatusMonitor {
             if (wasOffline) this.handleReconnection();
 
         } catch (error) {
-            console.error('Error fetching status:', error);
+            statusLog.error("Error fetching status", { error: error.message });
             if (this.stateManager.isConnected) {
                 this.handleDisconnection();
             }

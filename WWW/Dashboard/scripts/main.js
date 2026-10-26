@@ -381,9 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clockElement = document.getElementById('current-time');
         if (clockElement) {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            clockElement.textContent = `${hours}:${minutes}`;
+            clockElement.textContent = HouseView.formatClock(now);
         }
     }
 
@@ -398,11 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(state.scrollTimeout);
         const now = Date.now();
         
-        if (now - state.lastScrollTime > 500) {
-            if (Math.abs(e.deltaY) > 30) {
-                toggleView(e.deltaY > 0 ? 'down' : 'up');
-                state.lastScrollTime = now;
-            }
+        const direction = HouseView.wheelDirection(e.deltaY, now - state.lastScrollTime);
+        if (direction) {
+            toggleView(direction);
+            state.lastScrollTime = now;
         }
         
         state.scrollTimeout = setTimeout(() => {
@@ -452,33 +449,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.scrollCount = 0;
             }, 1000);
 
-            // Verificar navegación rápida
-            if (timeSinceLastScroll < 300) {
+            const pace = HouseView.scrollPace(state.scrollCount, timeSinceLastScroll);
+            if (pace === "fast") {
                 showToast('¡Más despacio! Navegando muy rápido', 'warning');
                 return;
             }
-
-            // Verificar muchos scrolls en poco tiempo
-            if (state.scrollCount > 4) {
+            if (pace === "burst") {
                 showToast('Demasiados movimientos seguidos', 'warning');
                 return;
             }
 
             state.lastScrollTime = now;
 
-            if (e.key === 'ArrowDown') {
-                if (!state.isGridVisible && !state.isThirdPanelVisible) {
-                    toggleView('down');
-                } else if (state.isGridVisible && !state.isThirdPanelVisible) {
-                    toggleView('down');
-                }
-            } else if (e.key === 'ArrowUp') {
-                if (state.isThirdPanelVisible) {
-                    toggleView('up');
-                } else if (state.isGridVisible) {
-                    toggleView('up');
-                }
-            }
+            const direction = HouseView.arrowDirection(e.key, state);
+            if (direction) toggleView(direction);
         }
     });
 

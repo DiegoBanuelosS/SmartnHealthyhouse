@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = dropdown.querySelector('.nav-item');
         
         link.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
+            if (PageState.isMobileLayout(window.innerWidth)) {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Para dispositivos móviles
-    if (window.innerWidth <= 768) {
+    if (PageState.isMobileLayout(window.innerWidth)) {
         const dropdowns = document.querySelectorAll('.dropdown');
         
         dropdowns.forEach(dropdown => {
@@ -109,26 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ecosystemObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // La sección del ecosistema está visible - ocultar SVGs
-                    if (houseOutline) {
-                        houseOutline.style.opacity = '0';
-                        houseOutline.style.transition = 'opacity 0.8s ease';
-                    }
-                    if (securityOutline) {
-                        securityOutline.style.opacity = '0';
-                        securityOutline.style.transition = 'opacity 0.8s ease';
-                    }
-                } else {
-                    // La sección del ecosistema no está visible - mostrar SVGs
-                    if (houseOutline) {
-                        houseOutline.style.opacity = '0.3';
-                        houseOutline.style.transition = 'opacity 0.8s ease';
-                    }
-                    if (securityOutline) {
-                        securityOutline.style.opacity = '0.3';
-                        securityOutline.style.transition = 'opacity 0.8s ease';
-                    }
+                const opacity = PageState.outlineOpacity(entry.isIntersecting);
+                if (houseOutline) {
+                    houseOutline.style.opacity = opacity;
+                    houseOutline.style.transition = 'opacity 0.8s ease';
+                }
+                if (securityOutline) {
+                    securityOutline.style.opacity = opacity;
+                    securityOutline.style.transition = 'opacity 0.8s ease';
                 }
             });
         }, observerOptions);
@@ -179,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const lottieObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting && !ecosystemAnimationPlayed) {
+                if (PageState.shouldStartPlayback(ecosystemAnimationPlayed, entry.isIntersecting)) {
                     console.log('Ecosystem section is in view');
                     playLottieAnimation();
                     

@@ -22,8 +22,6 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.808.0",
-    "@aws-sdk/client-dynamodb": "^3.808.0",
     "@capacitor/cli": "^7.2.0",
     "@capacitor/core": "^7.2.0",
     "@google-cloud/storage": "^7.16.0",
@@ -37,7 +35,6 @@
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "express-validator": "^7.3.2",
-    "faceapi": "^1.0.1",
     "firebase-admin": "^13.4.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -45,8 +42,7 @@
     "node-wifi": "^2.0.16",
     "nodemailer": "^10.2.1",
     "pino": "^9.14.0",
-    "socket.io": "^4.8.1",
-    "spotify-web-api-node": "^5.0.2"
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
@@ -67,7 +63,11 @@
       "API/server/http.js",
       "API/server/auth0/server/**/*.js",
       "API/Gemini/domain/**/*.js",
-      "API/Accuweather/**/*.js"
+      "API/Accuweather/**/*.js",
+      "WWW/Dashboard/scripts/socketClient.js",
+      "WWW/Dashboard/scripts/viewState.js",
+      "web/not-ready/pageState.js",
+      "WWW/Dashboard/scripts/logger.js"
     ],
     "reporter": [
       "text"

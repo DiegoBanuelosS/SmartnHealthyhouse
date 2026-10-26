@@ -6,7 +6,7 @@ const { body, param, validationResult } = require("express-validator");
 const { firestore } = require("./firebase");
 const { hasRequiredRegisterFields, normalizeLocation, validatePassword } = require("./validation");
 const { applyApiDefaults } = require("../../http");
-const { validate } = require("../../validate");
+const { validate, readRules } = require("../../validate");
 const logger = require("../../log");
 
 function fail(res, error, fallback) {
@@ -63,7 +63,8 @@ function createAuthApp(options = {}) {
         methods: ["GET", "POST"],
         credentials: true
     });
-    app.get("/health", (req, res) => {
+    app.get("/health", readRules, (req, res) => {
+        if (rejectInvalid(req, res)) return;
         res.json({ ok: true });
     });
 
@@ -242,7 +243,8 @@ function createAuthApp(options = {}) {
         }
     });
 
-    app.get("/config", (req, res) => {
+    app.get("/config", readRules, (req, res) => {
+        if (rejectInvalid(req, res)) return;
         res.json({
             apiKey: process.env.FIREBASE_API_KEY,
             authDomain: process.env.FIREBASE_AUTH_DOMAIN,

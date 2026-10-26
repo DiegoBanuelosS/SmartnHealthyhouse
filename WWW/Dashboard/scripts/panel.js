@@ -26,8 +26,7 @@
                                 y: 0, 
                                 duration: 0.3,
                                 onComplete: () => {
-                                    state.isGridVisible = true;
-                                    state.isThirdPanelVisible = false;
+                                    Object.assign(state, HouseView.nextPanel(state, 'down'));
                                 }
                             }
                         );
@@ -49,8 +48,7 @@
                                 y: 0, 
                                 duration: 0.3,
                                 onComplete: () => {
-                                    state.isGridVisible = false;
-                                    state.isThirdPanelVisible = true;
+                                    Object.assign(state, HouseView.nextPanel(state, 'down'));
                                 }
                             }
                         );
@@ -74,8 +72,7 @@
                                 y: 0, 
                                 duration: 0.3,
                                 onComplete: () => {
-                                    state.isGridVisible = true;
-                                    state.isThirdPanelVisible = false;
+                                    Object.assign(state, HouseView.nextPanel(state, 'up'));
                                 }
                             }
                         );
@@ -98,8 +95,7 @@
                                 y: 0, 
                                 duration: 0.3,
                                 onComplete: () => {
-                                    state.isGridVisible = false;
-                                    state.isThirdPanelVisible = false;
+                                    Object.assign(state, HouseView.nextPanel(state, 'up'));
                                 }
                             }
                         );
@@ -133,8 +129,7 @@ const handlePanelTransition = (direction) => {
                     );
                 }
             });
-            state.isGridVisible = true;
-            state.isThirdPanelVisible = false;
+            Object.assign(state, HouseView.nextPanel(state, 'down'));
         } else if (state.isGridVisible && !state.isThirdPanelVisible) {
             // Segunda vista a tercera vista
             gsap.to(sensorGrid, {
@@ -150,8 +145,7 @@ const handlePanelTransition = (direction) => {
                     );
                 }
             });
-            state.isGridVisible = false;
-            state.isThirdPanelVisible = true;
+            Object.assign(state, HouseView.nextPanel(state, 'down'));
         }
     } else if (direction === 'up') {
         if (state.isThirdPanelVisible) {
@@ -169,8 +163,7 @@ const handlePanelTransition = (direction) => {
                     );
                 }
             });
-            state.isThirdPanelVisible = false;
-            state.isGridVisible = true;
+            Object.assign(state, HouseView.nextPanel(state, 'up'));
         } else if (state.isGridVisible) {
             // Segunda vista a primera vista
             gsap.to(sensorGrid, {
@@ -187,8 +180,7 @@ const handlePanelTransition = (direction) => {
                     );
                 }
             });
-            state.isGridVisible = false;
-            state.isThirdPanelVisible = false;
+            Object.assign(state, HouseView.nextPanel(state, 'up'));
         }
     }
 };
@@ -198,11 +190,10 @@ window.addEventListener('wheel', (e) => {
     clearTimeout(state.scrollTimeout);
     const now = Date.now();
     
-    if (now - state.lastScrollTime > 500) {
-        if (Math.abs(e.deltaY) > 30) {
-            handlePanelTransition(e.deltaY > 0 ? 'down' : 'up');
-            state.lastScrollTime = now;
-        }
+    const direction = HouseView.wheelDirection(e.deltaY, now - state.lastScrollTime);
+    if (direction) {
+        handlePanelTransition(direction);
+        state.lastScrollTime = now;
     }
     
     state.scrollTimeout = setTimeout(() => {

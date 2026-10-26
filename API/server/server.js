@@ -14,7 +14,7 @@ const {
 } = require("./domain/incidents");
 const { loadMqttCredentials } = require("./credentials");
 const { applyApiDefaults } = require("./http");
-const { incidentRules, rejectValidation } = require("./validate");
+const { incidentRules, clearRules, readRules, rejectValidation } = require("./validate");
 const logger = require("./log");
 const metrics = require("./metrics");
 
@@ -69,15 +69,18 @@ function createHouseApp() {
         return metrics.snapshot({ sockets: io.sockets.sockets.size, mqtt: mqttState });
     }
 
-    app.get("/health", (req, res) => {
+    app.get("/health", readRules, (req, res) => {
+        if (rejectValidation(req, res)) return;
         res.json({ ok: true, ...runtime() });
     });
 
-    app.get("/metrics", (req, res) => {
+    app.get("/metrics", readRules, (req, res) => {
+        if (rejectValidation(req, res)) return;
         res.json(runtime());
     });
 
-    app.get("/status", (req, res) => {
+    app.get("/status", readRules, (req, res) => {
+        if (rejectValidation(req, res)) return;
         const now = new Date();
         if (!isToday(state.systemStatus.lastCleanup, now)) {
             cleanOldIncidents();
@@ -105,7 +108,8 @@ function createHouseApp() {
         }
     });
 
-    app.post("/clear-incidents", (req, res) => {
+    app.post("/clear-incidents", clearRules, (req, res) => {
+        if (rejectValidation(req, res)) return;
         state.systemStatus.incidents = [];
         state.systemStatus.lastCleanup = new Date();
         io.emit("incidentsCleared");
