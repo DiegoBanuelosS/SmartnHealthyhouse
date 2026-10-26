@@ -38,7 +38,7 @@
     "firebase-admin": "^13.4.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mqtt": "^5.13.0",
+    "mqtt": "^5.16.1",
     "node-wifi": "^2.0.16",
     "nodemailer": "^10.2.1",
     "pino": "^9.14.0",
