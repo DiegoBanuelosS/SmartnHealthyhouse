@@ -146,8 +146,8 @@ function createHouseApp() {
     };
 }
 
-function attachMqtt(house, credentials) {
-    const client = mqtt.connect({
+function attachMqtt(house, credentials, connect = mqtt.connect) {
+    const client = connect({
         clientId: `api_${Math.random().toString(16).slice(2, 8)}`,
         host: credentials.host,
         port: credentials.port,
@@ -257,4 +257,4 @@ if (require.main === module) {
     startHouseServer();
 }
 
-module.exports = { createHouseApp, startHouseServer };
+module.exports = { createHouseApp, attachMqtt, startHouseServer };

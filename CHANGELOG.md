@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+- El servidor de la casa acepta un cliente MQTT inyectado. Los tests cubren sensores, incidentes y el estado de conexion sin broker.
+
 ## 1.3.0
 
 - La suite corre con Jest. `npm test` no necesita `.env` ni cuentas externas.

@@ -25,7 +25,7 @@ Certificados del dispositivo, si vas a usar MQTT, van en `secrets/mqtt.key`, `se
 
 ## Tests
 
-No hace falta `.env`, ni cuenta de Firebase, AccuWeather, Gemini o MQTT. Un clon limpio alcanza con:
+No hace falta `.env`, ni cuenta de Firebase, AccuWeather, Gemini o MQTT. El cliente MQTT de los tests es un doble en memoria: no hay broker. Un clon limpio alcanza con:
 
 ```bash
 npm ci
